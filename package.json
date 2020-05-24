@@ -1,0 +1,22 @@
+{
+  "name": "demo_loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "downloader.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vingood/demo_downloaders.git"
+  },
+  "author": "vingood",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vingood/demo_downloaders/issues"
+  },
+  "homepage": "https://github.com/vingood/demo_downloaders#readme",
+  "dependencies": {
+    "bluebird": "^3.7.2"
+  }
+}
