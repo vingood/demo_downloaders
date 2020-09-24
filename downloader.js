@@ -2,21 +2,24 @@ const http = require('https');
 const os = require('os');
 const fs = require('fs').promises;
 
-const HOST_URL = process.env['API_HOST_URL'];
-const FILES = [
-  "0cf50f1c99234954b00340471538ce9d.MOV",
-  "0db9a58b669048dc999eb8f11f7ba424.MOV",
-  "0d38ceda70b14ccfaf6960514615757f.MOV",
-  "0CB55372-0173-49F7-9EAF-6CF1A40382C5.MOV",
-  "0f132134b2474cbd858559ed979835a3.MOV"
-];
+async function getFileList(fromFileName) {
+  const file = await fs.readFile(fromFileName);
 
+  return file.toString().split('\n').filter(str => str);
+}
+
+function getBaseNameFromUrl(uri) {
+  const url = require('url');
+  const path = require('path');
+
+  return path.basename(url.parse(uri).pathname);
+}
 
 async function fetchFile(filename) {
   return new Promise((resolve, reject) => {
     console.log(`Begin downloading: ${filename}`);
 
-    http.get(HOST_URL + filename, res => {
+    http.get(filename, res => {
       if (res.statusCode !== 200) {
         return reject(new Error(`Request ${filename} Failed. Status Code: ${res.statusCode}`));
       }
@@ -32,10 +35,14 @@ async function fetchFile(filename) {
 (async _ => {
   const time = Date.now();
 
-  await Promise.all(FILES.map(async name => {
-    const filename = `${os.tmpdir()}/${name}`;
+  const fileNames = await getFileList(process.env.CONTENT_FILE);
+
+  await Promise.all(fileNames.map(async url => {
+    const baseName = getBaseNameFromUrl(url);
+    const filename = `${os.tmpdir()}/${baseName}`;
+
     try {
-      const body = await fetchFile(name)
+      const body = await fetchFile(url)
       await fs.writeFile(filename, body);
       console.log(`Finished writing: ${filename}`)
     } catch(e) {
